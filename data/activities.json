@@ -1,0 +1,298 @@
+{
+  "version": 1,
+  "units": {
+    "temperature": "celsius",
+    "precipitationProbability": "percent",
+    "windSpeed": "km/h",
+    "uvIndex": "index",
+    "humidity": "percent"
+  },
+  "scoring": {
+    "maximumScore": 100,
+    "description": "Each weather factor receives a score between 0 and 1. Multiply that score by the factor weight, then add all weighted scores to get the final suitability percentage.",
+    "idealConditionScore": 1,
+    "outsideAcceptableRangeScore": 0
+  },
+  "activities": [
+    {
+      "id": "hiking",
+      "title": "Hiking",
+      "preferredWeather": {
+        "temperature": {
+          "idealMin": 10,
+          "idealMax": 22,
+          "acceptableMin": 2,
+          "acceptableMax": 30,
+          "weight": 30
+        },
+        "precipitationProbability": {
+          "idealMax": 20,
+          "acceptableMax": 50,
+          "weight": 25
+        },
+        "windSpeed": {
+          "idealMax": 20,
+          "acceptableMax": 35,
+          "weight": 15
+        },
+        "uvIndex": {
+          "idealMax": 5,
+          "acceptableMax": 8,
+          "weight": 10
+        },
+        "humidity": {
+          "idealMin": 30,
+          "idealMax": 65,
+          "acceptableMin": 20,
+          "acceptableMax": 85,
+          "weight": 20
+        }
+      }
+    },
+    {
+      "id": "cycling",
+      "title": "Cycling",
+      "preferredWeather": {
+        "temperature": {
+          "idealMin": 12,
+          "idealMax": 24,
+          "acceptableMin": 5,
+          "acceptableMax": 30,
+          "weight": 25
+        },
+        "precipitationProbability": {
+          "idealMax": 15,
+          "acceptableMax": 40,
+          "weight": 25
+        },
+        "windSpeed": {
+          "idealMax": 15,
+          "acceptableMax": 30,
+          "weight": 25
+        },
+        "uvIndex": {
+          "idealMax": 5,
+          "acceptableMax": 8,
+          "weight": 10
+        },
+        "humidity": {
+          "idealMin": 30,
+          "idealMax": 65,
+          "acceptableMin": 20,
+          "acceptableMax": 85,
+          "weight": 15
+        }
+      }
+    },
+    {
+      "id": "picnic",
+      "title": "Picnic",
+      "preferredWeather": {
+        "temperature": {
+          "idealMin": 18,
+          "idealMax": 26,
+          "acceptableMin": 12,
+          "acceptableMax": 30,
+          "weight": 30
+        },
+        "precipitationProbability": {
+          "idealMax": 10,
+          "acceptableMax": 30,
+          "weight": 35
+        },
+        "windSpeed": {
+          "idealMax": 15,
+          "acceptableMax": 25,
+          "weight": 15
+        },
+        "uvIndex": {
+          "idealMax": 5,
+          "acceptableMax": 8,
+          "weight": 10
+        },
+        "humidity": {
+          "idealMin": 30,
+          "idealMax": 65,
+          "acceptableMin": 20,
+          "acceptableMax": 80,
+          "weight": 10
+        }
+      }
+    },
+    {
+      "id": "outdoor-photography",
+      "title": "Outdoor Photography",
+      "preferredWeather": {
+        "temperature": {
+          "idealMin": 5,
+          "idealMax": 25,
+          "acceptableMin": -5,
+          "acceptableMax": 32,
+          "weight": 20
+        },
+        "precipitationProbability": {
+          "idealMax": 30,
+          "acceptableMax": 60,
+          "weight": 20
+        },
+        "windSpeed": {
+          "idealMax": 20,
+          "acceptableMax": 35,
+          "weight": 25
+        },
+        "uvIndex": {
+          "idealMax": 6,
+          "acceptableMax": 9,
+          "weight": 15
+        },
+        "humidity": {
+          "idealMin": 20,
+          "idealMax": 75,
+          "acceptableMin": 10,
+          "acceptableMax": 90,
+          "weight": 20
+        }
+      }
+    },
+    {
+      "id": "running",
+      "title": "Running",
+      "preferredWeather": {
+        "temperature": {
+          "idealMin": 8,
+          "idealMax": 18,
+          "acceptableMin": -2,
+          "acceptableMax": 26,
+          "weight": 35
+        },
+        "precipitationProbability": {
+          "idealMax": 20,
+          "acceptableMax": 50,
+          "weight": 20
+        },
+        "windSpeed": {
+          "idealMax": 15,
+          "acceptableMax": 30,
+          "weight": 15
+        },
+        "uvIndex": {
+          "idealMax": 4,
+          "acceptableMax": 8,
+          "weight": 10
+        },
+        "humidity": {
+          "idealMin": 30,
+          "idealMax": 60,
+          "acceptableMin": 20,
+          "acceptableMax": 80,
+          "weight": 20
+        }
+      }
+    },
+    {
+      "id": "camping",
+      "title": "Camping",
+      "preferredWeather": {
+        "temperature": {
+          "idealMin": 10,
+          "idealMax": 24,
+          "acceptableMin": 0,
+          "acceptableMax": 30,
+          "weight": 25
+        },
+        "precipitationProbability": {
+          "idealMax": 15,
+          "acceptableMax": 40,
+          "weight": 30
+        },
+        "windSpeed": {
+          "idealMax": 15,
+          "acceptableMax": 30,
+          "weight": 20
+        },
+        "uvIndex": {
+          "idealMax": 5,
+          "acceptableMax": 8,
+          "weight": 10
+        },
+        "humidity": {
+          "idealMin": 30,
+          "idealMax": 70,
+          "acceptableMin": 20,
+          "acceptableMax": 90,
+          "weight": 15
+        }
+      }
+    },
+    {
+      "id": "beach-day",
+      "title": "Beach Day",
+      "preferredWeather": {
+        "temperature": {
+          "idealMin": 24,
+          "idealMax": 32,
+          "acceptableMin": 20,
+          "acceptableMax": 36,
+          "weight": 35
+        },
+        "precipitationProbability": {
+          "idealMax": 10,
+          "acceptableMax": 30,
+          "weight": 25
+        },
+        "windSpeed": {
+          "idealMax": 20,
+          "acceptableMax": 35,
+          "weight": 15
+        },
+        "uvIndex": {
+          "idealMax": 6,
+          "acceptableMax": 10,
+          "weight": 15
+        },
+        "humidity": {
+          "idealMin": 30,
+          "idealMax": 70,
+          "acceptableMin": 20,
+          "acceptableMax": 90,
+          "weight": 10
+        }
+      }
+    },
+    {
+      "id": "walking",
+      "title": "Walking",
+      "preferredWeather": {
+        "temperature": {
+          "idealMin": 10,
+          "idealMax": 24,
+          "acceptableMin": 0,
+          "acceptableMax": 30,
+          "weight": 30
+        },
+        "precipitationProbability": {
+          "idealMax": 25,
+          "acceptableMax": 55,
+          "weight": 20
+        },
+        "windSpeed": {
+          "idealMax": 20,
+          "acceptableMax": 35,
+          "weight": 15
+        },
+        "uvIndex": {
+          "idealMax": 5,
+          "acceptableMax": 8,
+          "weight": 10
+        },
+        "humidity": {
+          "idealMin": 30,
+          "idealMax": 70,
+          "acceptableMin": 20,
+          "acceptableMax": 90,
+          "weight": 25
+        }
+      }
+    }
+  ]
+}
