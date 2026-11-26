@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Forecast · Should We Go?</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <script type="module" src="js/pages/forecast.js"></script>
+  </head>
+
+  <body>
+    <div id="site-header"></div>
+
+    <main id="main" class="container results">
+      <a class="back-link" href="index.html">← New search</a>
+
+      <p class="alert alert--error" id="search-error" role="alert" hidden></p>
+
+      <!-- Loading / empty state -->
+      <div id="results-state" aria-live="polite" hidden></div>
+
+      <div id="results-content" hidden>
+        <header class="results__header" id="results-header"></header>
+
+        <ul class="forecast-list" id="forecast-list" role="list" aria-label="7-day forecast"></ul>
+
+        <div class="verdict-grid">
+          <article class="card verdict" id="verdict"></article>
+          <article class="card verdict-grid__wide" id="weather-details"></article>
+          <article class="card" id="warnings"></article>
+          <article class="card" id="advice"></article>
+        </div>
+      </div>
+    </main>
+
+    <div id="site-footer"></div>
+  </body>
+</html>

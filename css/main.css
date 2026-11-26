@@ -4,6 +4,37 @@
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
+   Page shell (shared by every HTML page)
+   -------------------------------------------------------------------------- */
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Footer sticks to the bottom on short pages */
+main {
+  flex: 1;
+}
+
+/* JS fills these placeholders. display: contents lets the rendered
+   <header> behave as a direct child of <body> (needed for position: sticky). */
+#site-header,
+#site-footer {
+  display: contents;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: var(--space-4);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
    Skip link
    -------------------------------------------------------------------------- */
 .skip-link {
@@ -83,6 +114,10 @@
   background: rgb(255 255 255 / 0.1);
 }
 
+.nav__link[aria-current="page"] {
+  background: rgb(255 255 255 / 0.16);
+}
+
 .nav__count {
   min-width: 1.4rem;
   padding: 0 var(--space-1);
@@ -134,7 +169,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -185,6 +222,14 @@
   padding-block: var(--space-6);
 }
 
+.results__title {
+  font-size: var(--text-2xl);
+}
+
+.verdict__title {
+  font-size: var(--text-xl);
+}
+
 .results__header {
   display: flex;
   flex-wrap: wrap;
@@ -213,7 +258,8 @@
   border: 2px solid var(--border);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: border-color var(--duration-fast) var(--ease),
+  transition:
+    border-color var(--duration-fast) var(--ease),
     transform var(--duration-fast) var(--ease),
     box-shadow var(--duration-fast) var(--ease);
 }
@@ -296,7 +342,10 @@
   border-radius: 50%;
   background:
     radial-gradient(closest-side, var(--bg-surface) 78%, transparent 79%),
-    conic-gradient(var(--verdict-color) calc(var(--score) * 1%), var(--verdict-bg) 0);
+    conic-gradient(
+      var(--verdict-color) calc(var(--score) * 1%),
+      var(--verdict-bg) 0
+    );
 }
 
 .score-ring__value {
@@ -380,10 +429,11 @@
    SCREEN 2 — Saved plans
    -------------------------------------------------------------------------- */
 .saved {
-  padding-block: var(--space-7);
-  background: var(--bg-subtle);
-  border-top: 1px solid var(--border);
-  scroll-margin-top: var(--header-height);
+  padding-block: var(--space-6) var(--space-7);
+}
+
+.saved__title {
+  font-size: var(--text-2xl);
 }
 
 .saved__header {

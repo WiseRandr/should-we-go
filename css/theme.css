@@ -274,6 +274,7 @@ a {
   border: 1px solid transparent;
   border-radius: var(--radius-pill);
   font-weight: var(--weight-medium);
+  text-decoration: none;
   cursor: pointer;
   transition:
     background-color var(--duration-fast) var(--ease),
