@@ -1,11 +1,374 @@
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Should we go?</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Should We Go? — check the weather and get a clear go / no-go for your outdoor activity." />
+    <title>Should We Go? · Outdoor Activity Planner</title>
+
+    <!-- theme.css first: variables + global styles. main.css: screen layouts. -->
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/main.css" />
   </head>
+
   <body>
-    <div>
-      <h1>Should we go? (group 5)</h1>
-    </div>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <!-- ================================================================
+         HEADER
+         ================================================================ -->
+    <header class="site-header">
+      <div class="container site-header__inner">
+        <a class="brand" href="#planner">
+          <span class="brand__mark" aria-hidden="true">⛰</span>
+          <span class="brand__name">Should We Go?</span>
+        </a>
+        <nav aria-label="Main">
+          <ul class="nav" role="list">
+            <li><a class="nav__link" href="#planner">Plan</a></li>
+            <li>
+              <a class="nav__link" href="#saved-plans">
+                Saved plans
+                <span class="nav__count" id="saved-count">3</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- ================================================================
+           SCREEN 1 — PLANNER (search form + results)
+           ================================================================ -->
+      <section class="planner" id="planner" aria-labelledby="planner-title">
+        <div class="hero">
+          <div class="container">
+            <h1 id="planner-title">Should we go?</h1>
+            <p class="hero__lead">
+              Pick a city, an activity and a day. We'll check the forecast and tell you if it's worth it.
+            </p>
+
+            <!-- Search form -->
+            <form class="search-form card" id="search-form" novalidate>
+              <div class="field search-form__city">
+                <label class="field__label" for="city-input">City</label>
+                <input
+                  class="input"
+                  id="city-input"
+                  name="city"
+                  type="text"
+                  placeholder="e.g. Toronto"
+                  autocomplete="address-level2"
+                  required
+                />
+              </div>
+
+              <div class="field">
+                <label class="field__label" for="activity-select">Activity</label>
+                <select class="select" id="activity-select" name="activity" required>
+                  <option value="hiking">Hiking</option>
+                  <option value="cycling">Cycling</option>
+                  <option value="picnic">Picnic</option>
+                  <option value="outdoor-photography">Outdoor Photography</option>
+                  <option value="running">Running</option>
+                  <option value="camping">Camping</option>
+                  <option value="beach-day">Beach Day</option>
+                  <option value="walking">Walking</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label class="field__label" for="day-select">Day</label>
+                <select class="select" id="day-select" name="day">
+                  <option value="0">Today</option>
+                  <option value="1">Tomorrow</option>
+                  <option value="2">In 2 days</option>
+                  <option value="3">In 3 days</option>
+                  <option value="4">In 4 days</option>
+                  <option value="5">In 5 days</option>
+                  <option value="6">In 6 days</option>
+                </select>
+              </div>
+
+              <button class="btn btn--primary search-form__submit" type="submit">Check weather</button>
+
+              <!-- Visible error message (API / validation failures) -->
+              <p class="alert alert--error search-form__error" id="search-error" role="alert" hidden>
+                City not found. Check the spelling and try again.
+              </p>
+            </form>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div class="container results" id="results" aria-live="polite">
+          <!-- Loading state -->
+          <div class="state state--loading" id="results-loading" hidden>
+            <span class="spinner" aria-hidden="true"></span>
+            <p>Checking the sky…</p>
+          </div>
+
+          <!-- Empty state (before the first search) -->
+          <div class="state" id="results-empty" hidden>
+            <p class="state__icon" aria-hidden="true">🌤</p>
+            <p>Search for a city to see your forecast.</p>
+          </div>
+
+          <div class="results__content" id="results-content">
+            <header class="results__header">
+              <div>
+                <p class="eyebrow">Forecast for</p>
+                <h2 id="results-location">Toronto, Ontario, Canada</h2>
+              </div>
+              <p class="muted" id="results-activity">Activity: <strong>Hiking</strong></p>
+            </header>
+
+            <!-- Forecast day cards (click = choose day) -->
+            <h3 class="visually-hidden">7-day forecast</h3>
+            <ul class="forecast-list" id="forecast-list" role="list">
+              <li>
+                <button class="forecast-card is-selected" type="button" data-day="0" aria-pressed="true">
+                  <span class="forecast-card__day">Thu</span>
+                  <span class="forecast-card__date">Nov 26</span>
+                  <span class="forecast-card__temp">8° <span class="muted">/ 1°</span></span>
+                  <span class="badge badge--maybe">58</span>
+                </button>
+              </li>
+              <li>
+                <button class="forecast-card" type="button" data-day="1" aria-pressed="false">
+                  <span class="forecast-card__day">Fri</span>
+                  <span class="forecast-card__date">Nov 27</span>
+                  <span class="forecast-card__temp">12° <span class="muted">/ 4°</span></span>
+                  <span class="badge badge--go">81</span>
+                </button>
+              </li>
+              <li>
+                <button class="forecast-card" type="button" data-day="2" aria-pressed="false">
+                  <span class="forecast-card__day">Sat</span>
+                  <span class="forecast-card__date">Nov 28</span>
+                  <span class="forecast-card__temp">5° <span class="muted">/ -2°</span></span>
+                  <span class="badge badge--nogo">32</span>
+                </button>
+              </li>
+              <li>
+                <button class="forecast-card" type="button" data-day="3" aria-pressed="false">
+                  <span class="forecast-card__day">Sun</span>
+                  <span class="forecast-card__date">Nov 29</span>
+                  <span class="forecast-card__temp">9° <span class="muted">/ 2°</span></span>
+                  <span class="badge badge--maybe">64</span>
+                </button>
+              </li>
+              <li>
+                <button class="forecast-card" type="button" data-day="4" aria-pressed="false">
+                  <span class="forecast-card__day">Mon</span>
+                  <span class="forecast-card__date">Nov 30</span>
+                  <span class="forecast-card__temp">11° <span class="muted">/ 3°</span></span>
+                  <span class="badge badge--go">76</span>
+                </button>
+              </li>
+              <li>
+                <button class="forecast-card" type="button" data-day="5" aria-pressed="false">
+                  <span class="forecast-card__day">Tue</span>
+                  <span class="forecast-card__date">Dec 1</span>
+                  <span class="forecast-card__temp">7° <span class="muted">/ 0°</span></span>
+                  <span class="badge badge--maybe">51</span>
+                </button>
+              </li>
+              <li>
+                <button class="forecast-card" type="button" data-day="6" aria-pressed="false">
+                  <span class="forecast-card__day">Wed</span>
+                  <span class="forecast-card__date">Dec 2</span>
+                  <span class="forecast-card__temp">3° <span class="muted">/ -4°</span></span>
+                  <span class="badge badge--nogo">24</span>
+                </button>
+              </li>
+            </ul>
+
+            <!-- Selected day: verdict + details -->
+            <div class="verdict-grid">
+              <!-- Suitability score -->
+              <article class="card verdict" id="verdict" data-verdict="maybe" aria-labelledby="verdict-title">
+                <div class="score-ring" id="score-ring" style="--score: 58" role="img" aria-label="Suitability score 58 out of 100">
+                  <span class="score-ring__value" id="score-value">58</span>
+                  <span class="score-ring__max">/ 100</span>
+                </div>
+                <div class="verdict__text">
+                  <span class="badge badge--maybe" id="verdict-badge">Maybe</span>
+                  <h3 id="verdict-title">Doable, but come prepared</h3>
+                  <p class="muted" id="verdict-summary">
+                    Cool temperatures and a moderate chance of rain for hiking on Thursday, Nov 26.
+                  </p>
+                  <button class="btn btn--primary" type="button" id="save-plan-btn">Save this plan</button>
+                </div>
+              </article>
+
+              <!-- Weather details -->
+              <article class="card verdict-grid__wide" aria-labelledby="details-title">
+                <h3 class="card__title" id="details-title">Weather details</h3>
+                <dl class="weather-stats" id="weather-stats">
+                  <div class="weather-stat">
+                    <dt>Temperature</dt>
+                    <dd>8° / 1°C</dd>
+                  </div>
+                  <div class="weather-stat">
+                    <dt>Rain chance</dt>
+                    <dd>45%</dd>
+                  </div>
+                  <div class="weather-stat">
+                    <dt>Wind</dt>
+                    <dd>24 km/h</dd>
+                  </div>
+                  <div class="weather-stat">
+                    <dt>UV index</dt>
+                    <dd>2</dd>
+                  </div>
+                  <div class="weather-stat">
+                    <dt>Humidity</dt>
+                    <dd>72%</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <!-- Warnings -->
+              <article class="card" aria-labelledby="warnings-title">
+                <h3 class="card__title" id="warnings-title">Warnings</h3>
+                <ul class="note-list note-list--warning" id="warnings-list" role="list">
+                  <li>Rain chance is above the ideal 20% for hiking.</li>
+                  <li>Wind gusts may make exposed trails uncomfortable.</li>
+                </ul>
+              </article>
+
+              <!-- Packing advice -->
+              <article class="card" aria-labelledby="advice-title">
+                <h3 class="card__title" id="advice-title">Packing advice</h3>
+                <ul class="note-list note-list--advice" id="advice-list" role="list">
+                  <li>Waterproof jacket</li>
+                  <li>Warm layer and gloves</li>
+                  <li>Water and snacks</li>
+                </ul>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           SCREEN 2 — SAVED PLANS
+           ================================================================ -->
+      <section class="saved" id="saved-plans" aria-labelledby="saved-title">
+        <div class="container">
+          <header class="saved__header">
+            <div>
+              <p class="eyebrow">Compare later</p>
+              <h2 id="saved-title">Saved plans</h2>
+            </div>
+
+            <!-- Average-score summary -->
+            <div class="summary" id="saved-summary">
+              <div class="summary__item">
+                <span class="summary__value" id="summary-average">63</span>
+                <span class="summary__label">Average score</span>
+              </div>
+              <div class="summary__item">
+                <span class="summary__value" id="summary-total">3</span>
+                <span class="summary__label">Plans</span>
+              </div>
+            </div>
+          </header>
+
+          <!-- Filter + sort toolbar -->
+          <form class="toolbar" id="saved-toolbar" aria-label="Filter and sort saved plans">
+            <div class="field">
+              <label class="field__label" for="filter-activity">Activity</label>
+              <select class="select" id="filter-activity" name="activity">
+                <option value="all">All activities</option>
+                <option value="hiking">Hiking</option>
+                <option value="cycling">Cycling</option>
+                <option value="picnic">Picnic</option>
+                <option value="outdoor-photography">Outdoor Photography</option>
+                <option value="running">Running</option>
+                <option value="camping">Camping</option>
+                <option value="beach-day">Beach Day</option>
+                <option value="walking">Walking</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="filter-verdict">Verdict</label>
+              <select class="select" id="filter-verdict" name="verdict">
+                <option value="all">Any verdict</option>
+                <option value="go">Go</option>
+                <option value="maybe">Maybe</option>
+                <option value="nogo">Stay home</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="sort-plans">Sort by</label>
+              <select class="select" id="sort-plans" name="sort">
+                <option value="date-asc">Date (soonest)</option>
+                <option value="date-desc">Date (latest)</option>
+                <option value="score-desc">Score (highest)</option>
+                <option value="score-asc">Score (lowest)</option>
+                <option value="saved-desc">Recently saved</option>
+              </select>
+            </div>
+          </form>
+
+          <!-- Empty state -->
+          <div class="state" id="saved-empty" hidden>
+            <p class="state__icon" aria-hidden="true">🎒</p>
+            <p>No saved plans yet. Check the weather and hit <strong>Save this plan</strong>.</p>
+          </div>
+
+          <!-- Plan list (buttons use data-action + data-id for event delegation) -->
+          <ul class="plan-list" id="plan-list" role="list">
+            <li class="plan-card" data-id="plan-1" data-verdict="go">
+              <div class="plan-card__score">81</div>
+              <div class="plan-card__body">
+                <h3 class="plan-card__title">Cycling in Toronto</h3>
+                <p class="muted">Fri, Nov 27 · 12° / 4°C · 10% rain</p>
+              </div>
+              <span class="badge badge--go">Go</span>
+              <div class="plan-card__actions">
+                <button class="btn btn--ghost btn--sm" type="button" data-action="reopen" data-id="plan-1">Reopen</button>
+                <button class="btn btn--danger btn--sm" type="button" data-action="delete" data-id="plan-1">Delete</button>
+              </div>
+            </li>
+            <li class="plan-card" data-id="plan-2" data-verdict="maybe">
+              <div class="plan-card__score">58</div>
+              <div class="plan-card__body">
+                <h3 class="plan-card__title">Hiking in Toronto</h3>
+                <p class="muted">Thu, Nov 26 · 8° / 1°C · 45% rain</p>
+              </div>
+              <span class="badge badge--maybe">Maybe</span>
+              <div class="plan-card__actions">
+                <button class="btn btn--ghost btn--sm" type="button" data-action="reopen" data-id="plan-2">Reopen</button>
+                <button class="btn btn--danger btn--sm" type="button" data-action="delete" data-id="plan-2">Delete</button>
+              </div>
+            </li>
+            <li class="plan-card" data-id="plan-3" data-verdict="nogo">
+              <div class="plan-card__score">32</div>
+              <div class="plan-card__body">
+                <h3 class="plan-card__title">Picnic in Hamilton</h3>
+                <p class="muted">Sat, Nov 28 · 5° / -2°C · 70% rain</p>
+              </div>
+              <span class="badge badge--nogo">Stay home</span>
+              <div class="plan-card__actions">
+                <button class="btn btn--ghost btn--sm" type="button" data-action="reopen" data-id="plan-3">Reopen</button>
+                <button class="btn btn--danger btn--sm" type="button" data-action="delete" data-id="plan-3">Delete</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>Should We Go? · CPAN 113 Group 5 · Weather data by <a href="https://open-meteo.com/">Open-Meteo</a></p>
+      </div>
+    </footer>
   </body>
 </html>
