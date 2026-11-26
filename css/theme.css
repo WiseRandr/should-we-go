@@ -118,35 +118,36 @@
   --duration-base: 220ms;
 }
 
-/* Dark mode — only the semantic roles change, components stay the same */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-page: #111814;
-    --bg-surface: #1a231e;
-    --bg-subtle: #222d27;
-    --bg-header: #0c1310;
+/* Dark mode — set by js/theme.js with <html data-theme="dark">.
+   Only the semantic roles change, components stay the same. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
 
-    --text-primary: #eef3ef;
-    --text-secondary: #c2cdc6;
-    --text-muted: #8d9a92;
+  --bg-page: #111814;
+  --bg-surface: #1a231e;
+  --bg-subtle: #222d27;
+  --bg-header: #0c1310;
 
-    --accent: #4fa57f;
-    --accent-hover: #6bbd97;
-    --accent-soft: #1f3a2e;
-    --link: #7dbbe6;
+  --text-primary: #eef3ef;
+  --text-secondary: #c2cdc6;
+  --text-muted: #8d9a92;
 
-    --border: #2e3b34;
-    --border-strong: #4a5a51;
+  --accent: #4fa57f;
+  --accent-hover: #6bbd97;
+  --accent-soft: #1f3a2e;
+  --link: #7dbbe6;
 
-    --color-go-bg: #183626;
-    --color-maybe-bg: #3a2c0c;
-    --color-nogo-bg: #3d1a17;
-    --error-bg: var(--color-nogo-bg);
+  --border: #2e3b34;
+  --border-strong: #4a5a51;
 
-    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
-    --shadow-md: 0 4px 14px rgb(0 0 0 / 0.45);
-    --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.5);
-  }
+  --color-go-bg: #183626;
+  --color-maybe-bg: #3a2c0c;
+  --color-nogo-bg: #3d1a17;
+  --error-bg: var(--color-nogo-bg);
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 14px rgb(0 0 0 / 0.45);
+  --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.5);
 }
 
 /* --------------------------------------------------------------------------

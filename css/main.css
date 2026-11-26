@@ -111,6 +111,30 @@ main {
   background: rgb(255 255 255 / 0.16);
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid rgb(255 255 255 / 0.25);
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font-size: var(--text-lg);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease);
+}
+
+.theme-toggle:hover {
+  background: rgb(255 255 255 / 0.1);
+}
+
 .nav__count {
   min-width: 1.4rem;
   padding: 0 var(--space-1);
@@ -177,10 +201,8 @@ main {
     linear-gradient(180deg, var(--color-sky-100) 0%, var(--bg-page) 100%);
 }
 
-@media (prefers-color-scheme: dark) {
-  .hero {
-    background: linear-gradient(180deg, #16241d 0%, var(--bg-page) 100%);
-  }
+[data-theme="dark"] .hero {
+  background: linear-gradient(180deg, #16241d 0%, var(--bg-page) 100%);
 }
 
 .hero__lead {
