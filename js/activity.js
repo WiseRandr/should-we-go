@@ -1,2 +1,2 @@
 console.log("hello");
-console.log('should we go ')
+console.log('should we go');
