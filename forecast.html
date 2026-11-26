@@ -6,34 +6,81 @@
     <title>Forecast · Should We Go?</title>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/main.css" />
-    <script type="module" src="js/pages/forecast.js"></script>
+    <script src="js/forecast.js" defer></script>
   </head>
 
   <body>
-    <div id="site-header"></div>
+    <header class="site-header">
+      <div class="container site-header__inner">
+        <a class="brand" href="index.html">
+          <span class="brand__mark" aria-hidden="true">⛰</span>
+          <span class="brand__name">Should We Go?</span>
+        </a>
+        <nav aria-label="Main">
+          <ul class="nav" role="list">
+            <li><a class="nav__link" href="index.html" aria-current="page">Plan</a></li>
+            <li><a class="nav__link" href="saved.html">Saved plans</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
 
-    <main id="main" class="container results">
+    <main class="container results">
       <a class="back-link" href="index.html">← New search</a>
 
       <p class="alert alert--error" id="search-error" role="alert" hidden></p>
 
-      <!-- Loading / empty state -->
-      <div id="results-state" aria-live="polite" hidden></div>
+      <div class="state" id="results-empty" hidden>
+        <p class="state__icon" aria-hidden="true">🌤</p>
+        <p>Search for a city to see your forecast.</p>
+        <a class="btn btn--primary" href="index.html">Start a search</a>
+      </div>
 
       <div id="results-content" hidden>
-        <header class="results__header" id="results-header"></header>
+        <header class="results__header">
+          <div>
+            <p class="eyebrow">Forecast for</p>
+            <h1 class="results__title" id="results-location"></h1>
+          </div>
+          <p class="muted">Activity: <strong id="results-activity"></strong></p>
+        </header>
 
-        <ul class="forecast-list" id="forecast-list" role="list" aria-label="7-day forecast"></ul>
+        <ul class="forecast-list" id="forecast-list" role="list"></ul>
 
         <div class="verdict-grid">
-          <article class="card verdict" id="verdict"></article>
-          <article class="card verdict-grid__wide" id="weather-details"></article>
-          <article class="card" id="warnings"></article>
-          <article class="card" id="advice"></article>
+          <article class="card verdict" id="verdict">
+            <div class="score-ring" id="score-ring" role="img">
+              <span class="score-ring__value" id="score-value"></span>
+              <span class="score-ring__max">/ 100</span>
+            </div>
+            <div class="verdict__text">
+              <span class="badge" id="verdict-badge"></span>
+              <h2 class="verdict__title" id="verdict-title"></h2>
+              <p class="muted" id="verdict-summary"></p>
+              <button class="btn btn--primary" type="button" id="save-plan-btn">Save this plan</button>
+            </div>
+          </article>
+
+          <article class="card verdict-grid__wide">
+            <h2 class="card__title">Weather details</h2>
+            <dl class="weather-stats" id="weather-stats"></dl>
+          </article>
+
+          <article class="card">
+            <h2 class="card__title">Warnings</h2>
+            <ul class="note-list note-list--warning" id="warnings-list" role="list"></ul>
+          </article>
+
+          <article class="card">
+            <h2 class="card__title">Packing advice</h2>
+            <ul class="note-list note-list--advice" id="advice-list" role="list"></ul>
+          </article>
         </div>
       </div>
     </main>
 
-    <div id="site-footer"></div>
+    <footer class="site-footer">
+      <p>Should We Go? · CPAN 113 Group 5 · Weather data by <a href="https://open-meteo.com/">Open-Meteo</a></p>
+    </footer>
   </body>
 </html>

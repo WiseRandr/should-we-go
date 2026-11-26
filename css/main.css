@@ -16,13 +16,6 @@ main {
   flex: 1;
 }
 
-/* JS fills these placeholders. display: contents lets the rendered
-   <header> behave as a direct child of <body> (needed for position: sticky). */
-#site-header,
-#site-footer {
-  display: contents;
-}
-
 .back-link {
   display: inline-block;
   margin-bottom: var(--space-4);
