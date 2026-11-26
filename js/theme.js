@@ -17,6 +17,4 @@ document.addEventListener("DOMContentLoaded", () => {
     themeToggle.textContent = theme === "dark" ? "☀️" : "🌙";
     localStorage.setItem("theme", theme);
   });
-
-  updateToggle();
 });
