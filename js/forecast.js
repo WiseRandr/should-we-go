@@ -15,17 +15,7 @@ const verdictSummary = document.getElementById("verdict-summary");
 const weatherStats = document.getElementById("weather-stats");
 const warningsList = document.getElementById("warnings-list");
 const adviceList = document.getElementById("advice-list");
-
-const activities = [
-  { id: "hiking", title: "Hiking" },
-  { id: "cycling", title: "Cycling" },
-  { id: "picnic", title: "Picnic" },
-  { id: "outdoor-photography", title: "Outdoor Photography" },
-  { id: "running", title: "Running" },
-  { id: "camping", title: "Camping" },
-  { id: "beach-day", title: "Beach Day" },
-  { id: "walking", title: "Walking" },
-];
+const searchError = document.getElementById("search-error");
 
 // Sample data until the API and scoring are connected
 const forecast = [
@@ -65,9 +55,36 @@ function formatDate(date, options) {
   return new Date(`${date}T00:00:00`).toLocaleDateString("en-CA", options);
 }
 
-if (!city) {
-  resultsEmpty.hidden = false;
-} else {
+async function loadActivities() {
+  try {
+    const response = await fetch("data/activities.json");
+
+    if (!response.ok) {
+      throw new Error("Could not load activities");
+    }
+
+    const data = await response.json();
+    return data.activities;
+  } catch (error) {
+    console.log(error.message);
+    searchError.textContent = "Could not load the activities. Please refresh the page.";
+    searchError.hidden = false;
+    return [];
+  }
+}
+
+async function showForecast() {
+  if (!city) {
+    resultsEmpty.hidden = false;
+    return;
+  }
+
+  const activities = await loadActivities();
+
+  if (activities.length === 0) {
+    return;
+  }
+
   const activity = activities.find((item) => item.id === activityId) || activities[0];
   const selectedDay = forecast[dayIndex] || forecast[0];
   const verdict = getVerdict(selectedDay.score);
@@ -168,3 +185,5 @@ if (!city) {
 
   resultsContent.hidden = false;
 }
+
+showForecast();

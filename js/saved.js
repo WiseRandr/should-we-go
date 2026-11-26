@@ -6,17 +6,7 @@ const summaryAverage = document.getElementById("summary-average");
 const summaryTotal = document.getElementById("summary-total");
 const savedEmpty = document.getElementById("saved-empty");
 const planList = document.getElementById("plan-list");
-
-const activities = [
-  { id: "hiking", title: "Hiking" },
-  { id: "cycling", title: "Cycling" },
-  { id: "picnic", title: "Picnic" },
-  { id: "outdoor-photography", title: "Outdoor Photography" },
-  { id: "running", title: "Running" },
-  { id: "camping", title: "Camping" },
-  { id: "beach-day", title: "Beach Day" },
-  { id: "walking", title: "Walking" },
-];
+const savedError = document.getElementById("saved-error");
 
 // Sample data until storage.js is connected
 const plans = [
@@ -65,13 +55,37 @@ function getVerdict(score) {
   }
 }
 
+async function loadActivities() {
+  try {
+    const response = await fetch("data/activities.json");
+
+    if (!response.ok) {
+      throw new Error("Could not load activities");
+    }
+
+    const data = await response.json();
+    return data.activities;
+  } catch (error) {
+    console.log(error.message);
+    savedError.textContent = "Could not load the activities. Please refresh the page.";
+    savedError.hidden = false;
+    return [];
+  }
+}
+
 // Activity filter options
-activities.forEach((activity) => {
-  const option = document.createElement("option");
-  option.value = activity.id;
-  option.textContent = activity.title;
-  filterActivity.appendChild(option);
-});
+async function showActivityFilter() {
+  const activities = await loadActivities();
+
+  activities.forEach((activity) => {
+    const option = document.createElement("option");
+    option.value = activity.id;
+    option.textContent = activity.title;
+    filterActivity.appendChild(option);
+  });
+}
+
+showActivityFilter();
 
 // Summary
 const totalScore = plans.reduce((sum, plan) => sum + plan.score, 0);

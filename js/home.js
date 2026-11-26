@@ -3,26 +3,40 @@
 
 const activitySelect = document.getElementById("activity-select");
 const daySelect = document.getElementById("day-select");
-
-const activities = [
-  { id: "hiking", title: "Hiking" },
-  { id: "cycling", title: "Cycling" },
-  { id: "picnic", title: "Picnic" },
-  { id: "outdoor-photography", title: "Outdoor Photography" },
-  { id: "running", title: "Running" },
-  { id: "camping", title: "Camping" },
-  { id: "beach-day", title: "Beach Day" },
-  { id: "walking", title: "Walking" },
-];
+const searchError = document.getElementById("search-error");
 
 const totalDays = 7;
 
-activities.forEach((activity) => {
-  const option = document.createElement("option");
-  option.value = activity.id;
-  option.textContent = activity.title;
-  activitySelect.appendChild(option);
-});
+async function loadActivities() {
+  try {
+    const response = await fetch("data/activities.json");
+
+    if (!response.ok) {
+      throw new Error("Could not load activities");
+    }
+
+    const data = await response.json();
+    return data.activities;
+  } catch (error) {
+    console.log(error.message);
+    searchError.textContent = "Could not load the activities. Please refresh the page.";
+    searchError.hidden = false;
+    return [];
+  }
+}
+
+async function showActivities() {
+  const activities = await loadActivities();
+
+  activities.forEach((activity) => {
+    const option = document.createElement("option");
+    option.value = activity.id;
+    option.textContent = activity.title;
+    activitySelect.appendChild(option);
+  });
+}
+
+showActivities();
 
 for (let i = 0; i < totalDays; i++) {
   const option = document.createElement("option");
