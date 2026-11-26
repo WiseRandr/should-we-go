@@ -222,10 +222,6 @@ a {
   border-radius: var(--radius-sm);
 }
 
-.input[aria-invalid="true"] {
-  border-color: var(--nogo);
-}
-
 .badge {
   padding: 0.15rem var(--space-3);
   border-radius: var(--radius-pill);
