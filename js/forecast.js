@@ -2,6 +2,7 @@
 // Student number: n10035720
 
 import STORAGE from "./storage.js";
+import { createActivity } from "./activity.js";
 
 const resultsEmpty = document.getElementById("results-empty");
 const resultsContent = document.getElementById("results-content");
@@ -19,23 +20,16 @@ const warningsList = document.getElementById("warnings-list");
 const adviceList = document.getElementById("advice-list");
 const searchError = document.getElementById("search-error");
 
-// Sample data until the API and scoring are connected
+// Sample data until the API is connected
 const forecast = [
-  { date: "2026-11-26", maxTemp: 8, minTemp: 1, rainChance: 45, windSpeed: 24, uvIndex: 2, humidity: 72, score: 58 },
-  { date: "2026-11-27", maxTemp: 12, minTemp: 4, rainChance: 10, windSpeed: 12, uvIndex: 3, humidity: 55, score: 81 },
-  { date: "2026-11-28", maxTemp: 5, minTemp: -2, rainChance: 70, windSpeed: 31, uvIndex: 1, humidity: 88, score: 32 },
-  { date: "2026-11-29", maxTemp: 9, minTemp: 2, rainChance: 30, windSpeed: 18, uvIndex: 2, humidity: 66, score: 64 },
-  { date: "2026-11-30", maxTemp: 11, minTemp: 3, rainChance: 15, windSpeed: 16, uvIndex: 3, humidity: 60, score: 76 },
-  { date: "2026-12-01", maxTemp: 7, minTemp: 0, rainChance: 40, windSpeed: 22, uvIndex: 2, humidity: 70, score: 51 },
-  { date: "2026-12-02", maxTemp: 3, minTemp: -4, rainChance: 80, windSpeed: 35, uvIndex: 1, humidity: 90, score: 24 },
+  { date: "2026-11-26", maxTemp: 8, minTemp: 1, rainChance: 45, windSpeed: 24, uvIndex: 2, humidity: 72 },
+  { date: "2026-11-27", maxTemp: 12, minTemp: 4, rainChance: 10, windSpeed: 12, uvIndex: 3, humidity: 55 },
+  { date: "2026-11-28", maxTemp: 5, minTemp: -2, rainChance: 70, windSpeed: 31, uvIndex: 1, humidity: 88 },
+  { date: "2026-11-29", maxTemp: 9, minTemp: 2, rainChance: 30, windSpeed: 18, uvIndex: 2, humidity: 66 },
+  { date: "2026-11-30", maxTemp: 11, minTemp: 3, rainChance: 15, windSpeed: 16, uvIndex: 3, humidity: 60 },
+  { date: "2026-12-01", maxTemp: 7, minTemp: 0, rainChance: 40, windSpeed: 22, uvIndex: 2, humidity: 70 },
+  { date: "2026-12-02", maxTemp: 3, minTemp: -4, rainChance: 80, windSpeed: 35, uvIndex: 1, humidity: 90 },
 ];
-
-const warnings = [
-  "Rain chance is above the ideal 20% for hiking.",
-  "Wind gusts may make exposed trails uncomfortable.",
-];
-
-const advice = ["Waterproof jacket", "Warm layer and gloves", "Water and snacks"];
 
 const params = new URLSearchParams(window.location.search);
 const city = params.get("city");
@@ -71,16 +65,23 @@ async function showForecast() {
     return;
   }
 
-  const activity = activities.find((item) => item.id === activityId) || activities[0];
-  const selectedDay = forecast[dayIndex] || forecast[0];
+  const activityData = activities.find((item) => item.id === activityId) || activities[0];
+  const activity = createActivity(activityData);
+
+  // Add a score to every day
+  const days = forecast.map((day) => ({ ...day, score: activity.calculateScore(day) }));
+
+  const selectedDay = days[dayIndex] || days[0];
   const verdict = getVerdict(selectedDay.score);
+  const warnings = activity.getWarnings(selectedDay);
+  const advice = activity.getAdvice(selectedDay);
 
   // Header
   resultsLocation.textContent = city;
   resultsActivity.textContent = activity.title;
 
   // Forecast day cards
-  forecast.forEach((day, index) => {
+  days.forEach((day, index) => {
     const dayVerdict = getVerdict(day.score);
 
     const li = document.createElement("li");
@@ -155,7 +156,12 @@ async function showForecast() {
     weatherStats.appendChild(div);
   });
 
-  // Warnings
+  // Warnings (shown as a green "all good" line when there are none)
+  if (warnings.length === 0) {
+    warningsList.className = "note-list note-list--advice";
+    warnings.push("No warnings, conditions look good.");
+  }
+
   warnings.forEach((warning) => {
     const li = document.createElement("li");
     li.textContent = warning;
