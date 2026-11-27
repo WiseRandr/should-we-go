@@ -1,6 +1,8 @@
 // Author: Wise Randriamialison
 // Student number: n10035720
 
+import STORAGE from "./storage.js";
+
 const filterActivity = document.getElementById("filter-activity");
 const summaryAverage = document.getElementById("summary-average");
 const summaryTotal = document.getElementById("summary-total");
@@ -55,37 +57,20 @@ function getVerdict(score) {
   }
 }
 
-async function loadActivities() {
-  try {
-    const response = await fetch("data/activities.json");
-
-    if (!response.ok) {
-      throw new Error("Could not load activities");
-    }
-
-    const data = await response.json();
-    return data.activities;
-  } catch (error) {
-    console.log(error.message);
-    savedError.textContent = "Could not load the activities. Please refresh the page.";
-    savedError.hidden = false;
-    return [];
-  }
-}
-
 // Activity filter options
-async function showActivityFilter() {
-  const activities = await loadActivities();
+const { activities, error } = await STORAGE.getActivities();
 
-  activities.forEach((activity) => {
-    const option = document.createElement("option");
-    option.value = activity.id;
-    option.textContent = activity.title;
-    filterActivity.appendChild(option);
-  });
+if (error) {
+  savedError.textContent = error;
+  savedError.hidden = false;
 }
 
-showActivityFilter();
+activities.forEach((activity) => {
+  const option = document.createElement("option");
+  option.value = activity.id;
+  option.textContent = activity.title;
+  filterActivity.appendChild(option);
+});
 
 // Summary
 const totalScore = plans.reduce((sum, plan) => sum + plan.score, 0);

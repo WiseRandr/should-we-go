@@ -1,6 +1,8 @@
 // Author: Wise Randriamialison
 // Student number: n10035720
 
+import STORAGE from "./storage.js";
+
 const resultsEmpty = document.getElementById("results-empty");
 const resultsContent = document.getElementById("results-content");
 const resultsLocation = document.getElementById("results-location");
@@ -55,33 +57,17 @@ function formatDate(date, options) {
   return new Date(`${date}T00:00:00`).toLocaleDateString("en-CA", options);
 }
 
-async function loadActivities() {
-  try {
-    const response = await fetch("data/activities.json");
-
-    if (!response.ok) {
-      throw new Error("Could not load activities");
-    }
-
-    const data = await response.json();
-    return data.activities;
-  } catch (error) {
-    console.log(error.message);
-    searchError.textContent = "Could not load the activities. Please refresh the page.";
-    searchError.hidden = false;
-    return [];
-  }
-}
-
 async function showForecast() {
   if (!city) {
     resultsEmpty.hidden = false;
     return;
   }
 
-  const activities = await loadActivities();
+  const { activities, error } = await STORAGE.getActivities();
 
-  if (activities.length === 0) {
+  if (error) {
+    searchError.textContent = error;
+    searchError.hidden = false;
     return;
   }
 
