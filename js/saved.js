@@ -10,43 +10,6 @@ const savedEmpty = document.getElementById("saved-empty");
 const planList = document.getElementById("plan-list");
 const savedError = document.getElementById("saved-error");
 
-// Sample data until storage.js is connected
-const plans = [
-  {
-    id: "plan-1",
-    city: "Toronto",
-    activityId: "cycling",
-    activityTitle: "Cycling",
-    dayIndex: 1,
-    date: "2026-11-27",
-    score: 81,
-    weather: { maxTemp: 12, minTemp: 4, rainChance: 10, windSpeed: 12 },
-    savedAt: "2026-11-26T15:30:00.000Z",
-  },
-  {
-    id: "plan-2",
-    city: "Toronto",
-    activityId: "hiking",
-    activityTitle: "Hiking",
-    dayIndex: 0,
-    date: "2026-11-26",
-    score: 58,
-    weather: { maxTemp: 8, minTemp: 1, rainChance: 45, windSpeed: 24 },
-    savedAt: "2026-11-26T15:10:00.000Z",
-  },
-  {
-    id: "plan-3",
-    city: "Hamilton",
-    activityId: "picnic",
-    activityTitle: "Picnic",
-    dayIndex: 2,
-    date: "2026-11-28",
-    score: 32,
-    weather: { maxTemp: 5, minTemp: -2, rainChance: 70, windSpeed: 31 },
-    savedAt: "2026-11-26T14:45:00.000Z",
-  },
-];
-
 function getVerdict(score) {
   if (score >= 70) {
     return { key: "go", label: "Go" };
@@ -57,14 +20,15 @@ function getVerdict(score) {
   }
 }
 
-// Activity filter options
-const { activities, error } = await STORAGE.getActivities();
+const { activities, error: activitiesError } = await STORAGE.getActivities();
+const { plans, error: plansError } = await STORAGE.getPlans();
 
-if (error) {
-  savedError.textContent = error;
+if (activitiesError || plansError) {
+  savedError.textContent = plansError || activitiesError;
   savedError.hidden = false;
 }
 
+// Activity filter options
 activities.forEach((activity) => {
   const option = document.createElement("option");
   option.value = activity.id;
@@ -78,7 +42,7 @@ summaryTotal.textContent = plans.length;
 summaryAverage.textContent = plans.length > 0 ? Math.round(totalScore / plans.length) : "–";
 
 // Empty state
-if (plans.length === 0) {
+if (plans.length === 0 && !plansError) {
   savedEmpty.hidden = false;
 }
 

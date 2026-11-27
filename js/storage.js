@@ -17,6 +17,22 @@ const STORAGE = {
       return { activities: [], error: "Could not load the activities. Please refresh the page." };
     }
   },
+
+  getPlans: async () => {
+    try {
+      const response = await fetch("data/plans.json");
+
+      if (!response.ok) {
+        throw new Error("Could not load the saved plans. Please refresh the page.");
+      }
+
+      const json = await response.json();
+      return { plans: json.plans, error: null };
+    } catch (error) {
+      console.log(error.message);
+      return { plans: [], error: "Could not load the saved plans. Please refresh the page." };
+    }
+  },
 };
 
 export default STORAGE;
