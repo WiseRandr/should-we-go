@@ -21,11 +21,13 @@ const weatherStats = document.getElementById("weather-stats");
 const warningsList = document.getElementById("warnings-list");
 const adviceList = document.getElementById("advice-list");
 const searchError = document.getElementById("search-error");
+const savePlanButton = document.getElementById("save-plan-btn");
 
 const params = new URLSearchParams(window.location.search);
 const city = params.get("city");
 const activityId = params.get("activity");
 const dayIndex = Number(params.get("day")) || 0;
+const date = params.get("date"); // sent by Reopen on the saved plans page
 
 function getVerdict(score) {
   if (score >= 70) {
@@ -87,7 +89,23 @@ async function showForecast() {
   // Add a score to every day
   const days = forecast.map((day) => ({ ...day, score: activity.calculateScore(day) }));
 
-  const selectedDay = days[dayIndex] || days[0];
+  // Pick the day: by date for a reopened plan, otherwise by the day number from the form
+  let selectedIndex = dayIndex;
+
+  if (date) {
+    selectedIndex = days.findIndex((day) => day.date === date);
+
+    if (selectedIndex === -1) {
+      const shownDate = formatDate(date, { weekday: "long", month: "short", day: "numeric" });
+      showError(`The forecast for ${shownDate} is no longer available. Showing today instead.`);
+    }
+  }
+
+  if (!days[selectedIndex]) {
+    selectedIndex = 0;
+  }
+
+  const selectedDay = days[selectedIndex];
   const verdict = getVerdict(selectedDay.score);
   const warnings = activity.getWarnings(selectedDay);
   const advice = activity.getAdvice(selectedDay);
@@ -107,7 +125,7 @@ async function showForecast() {
     button.className = "forecast-card";
     button.dataset.day = index;
 
-    if (index === dayIndex) {
+    if (index === selectedIndex) {
       button.classList.add("is-selected");
     }
 
@@ -196,6 +214,44 @@ async function showForecast() {
     const li = document.createElement("li");
     li.textContent = item;
     adviceList.appendChild(li);
+  });
+
+  // Save plan (id = date + activity, so there is only one plan per activity per day)
+  const planId = `${selectedDay.date}-${activity.id}`;
+  const { plans } = await STORAGE.getPlans();
+
+  if (plans.some((plan) => plan.id === planId)) {
+    savePlanButton.textContent = "Update saved plan";
+  }
+
+  savePlanButton.addEventListener("click", async () => {
+    const plan = {
+      id: planId,
+      city: place.name,
+      activityId: activity.id,
+      activityTitle: activity.title,
+      dayIndex: selectedIndex,
+      date: selectedDay.date,
+      score: selectedDay.score,
+      weather: {
+        maxTemp: Math.round(selectedDay.maxTemp),
+        minTemp: Math.round(selectedDay.minTemp),
+        rainChance: selectedDay.rainChance,
+        windSpeed: Math.round(selectedDay.windSpeed),
+      },
+      savedAt: new Date().toISOString(),
+    };
+
+    const { error } = await STORAGE.savePlan(plan);
+
+    if (error) {
+      showError(error);
+      return;
+    }
+
+    // Stop the same plan from being saved twice
+    savePlanButton.textContent = "Saved ✓";
+    savePlanButton.disabled = true;
   });
 
   resultsContent.hidden = false;

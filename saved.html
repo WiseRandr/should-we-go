@@ -70,11 +70,11 @@
         <div class="field">
           <label class="field__label" for="sort-plans">Sort by</label>
           <select class="select" id="sort-plans" name="sort">
+            <option value="saved-desc">Recently saved</option>
             <option value="date-asc">Date (soonest)</option>
             <option value="date-desc">Date (latest)</option>
             <option value="score-desc">Score (highest)</option>
             <option value="score-asc">Score (lowest)</option>
-            <option value="saved-desc">Recently saved</option>
           </select>
         </div>
       </form>
@@ -84,6 +84,8 @@
         <p>No saved plans yet. Check the weather and save a plan to compare it later.</p>
         <a class="btn btn--primary" href="index.html">Plan an activity</a>
       </div>
+
+      <p class="state" id="saved-no-match" hidden>No plans match these filters.</p>
 
       <ul class="plan-list" id="plan-list" role="list"></ul>
     </main>

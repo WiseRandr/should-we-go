@@ -3,7 +3,11 @@
 
 import STORAGE from "./storage.js";
 
+const savedToolbar = document.getElementById("saved-toolbar");
 const filterActivity = document.getElementById("filter-activity");
+const filterVerdict = document.getElementById("filter-verdict");
+const sortPlans = document.getElementById("sort-plans");
+const savedNoMatch = document.getElementById("saved-no-match");
 const summaryAverage = document.getElementById("summary-average");
 const summaryTotal = document.getElementById("summary-total");
 const savedEmpty = document.getElementById("saved-empty");
@@ -20,34 +24,12 @@ function getVerdict(score) {
   }
 }
 
-const { activities, error: activitiesError } = await STORAGE.getActivities();
-const { plans, error: plansError } = await STORAGE.getPlans();
-
-if (activitiesError || plansError) {
-  savedError.textContent = plansError || activitiesError;
+function showError(message) {
+  savedError.textContent = message;
   savedError.hidden = false;
 }
 
-// Activity filter options
-activities.forEach((activity) => {
-  const option = document.createElement("option");
-  option.value = activity.id;
-  option.textContent = activity.title;
-  filterActivity.appendChild(option);
-});
-
-// Summary
-const totalScore = plans.reduce((sum, plan) => sum + plan.score, 0);
-summaryTotal.textContent = plans.length;
-summaryAverage.textContent = plans.length > 0 ? Math.round(totalScore / plans.length) : "–";
-
-// Empty state
-if (plans.length === 0 && !plansError) {
-  savedEmpty.hidden = false;
-}
-
-// Plan cards
-plans.forEach((plan) => {
+function createPlanCard(plan) {
   const verdict = getVerdict(plan.score);
   const date = new Date(`${plan.date}T00:00:00`).toLocaleDateString("en-CA", {
     weekday: "short",
@@ -106,5 +88,109 @@ plans.forEach((plan) => {
   li.appendChild(body);
   li.appendChild(badge);
   li.appendChild(actions);
-  planList.appendChild(li);
+  return li;
+}
+
+function filterPlans(list) {
+  return list.filter((plan) => {
+    const matchesActivity = filterActivity.value === "all" || plan.activityId === filterActivity.value;
+    const matchesVerdict = filterVerdict.value === "all" || getVerdict(plan.score).key === filterVerdict.value;
+    return matchesActivity && matchesVerdict;
+  });
+}
+
+function sortList(list) {
+  // Copy with spread so sort() doesn't change the original array
+  const sorted = [...list];
+
+  switch (sortPlans.value) {
+    case "date-asc":
+      return sorted.sort((a, b) => a.date.localeCompare(b.date));
+    case "date-desc":
+      return sorted.sort((a, b) => b.date.localeCompare(a.date));
+    case "score-desc":
+      return sorted.sort((a, b) => b.score - a.score);
+    case "score-asc":
+      return sorted.sort((a, b) => a.score - b.score);
+    default:
+      // "saved-desc": latest saved first
+      return sorted.sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt));
+  }
+}
+
+// Draws the summary + the list. Called on load, after a delete and when a filter/sort changes.
+function showPlans() {
+  const shownPlans = sortList(filterPlans(plans));
+
+  // Summary of the plans currently shown
+  const totalScore = shownPlans.reduce((sum, plan) => sum + plan.score, 0);
+  summaryTotal.textContent = shownPlans.length;
+  summaryAverage.textContent = shownPlans.length > 0 ? Math.round(totalScore / shownPlans.length) : "–";
+
+  // Empty states: nothing saved at all vs nothing matching the filters
+  savedEmpty.hidden = plans.length > 0 || plansError !== null;
+  savedNoMatch.hidden = plans.length === 0 || shownPlans.length > 0;
+
+  // Plan cards
+  planList.innerHTML = "";
+  shownPlans.forEach((plan) => {
+    planList.appendChild(createPlanCard(plan));
+  });
+}
+
+const { activities, error: activitiesError } = await STORAGE.getActivities();
+const { plans: savedPlans, error: plansError } = await STORAGE.getPlans();
+let plans = savedPlans;
+
+if (activitiesError || plansError) {
+  showError(plansError || activitiesError);
+}
+
+// Activity filter options
+activities.forEach((activity) => {
+  const option = document.createElement("option");
+  option.value = activity.id;
+  option.textContent = activity.title;
+  filterActivity.appendChild(option);
+});
+
+showPlans();
+
+// Any filter or sort change redraws the list
+savedToolbar.addEventListener("change", showPlans);
+
+// One listener for every Reopen / Delete button (event delegation)
+planList.addEventListener("click", async (event) => {
+  const button = event.target.closest("button[data-action]");
+
+  if (!button) {
+    return;
+  }
+
+  const plan = plans.find((item) => item.id === button.dataset.id);
+
+  if (!plan) {
+    return;
+  }
+
+  if (button.dataset.action === "reopen") {
+    const params = new URLSearchParams({ city: plan.city, activity: plan.activityId, date: plan.date });
+    window.location.href = `forecast.html?${params.toString()}`;
+  }
+
+  if (button.dataset.action === "delete") {
+    if (!confirm(`Delete "${plan.activityTitle} in ${plan.city}"?`)) {
+      return;
+    }
+
+    const { plans: updatedPlans, error } = await STORAGE.deletePlan(plan.id);
+
+    if (error) {
+      showError(error);
+      return;
+    }
+
+    plans = updatedPlans;
+    showPlans();
+  }
 });

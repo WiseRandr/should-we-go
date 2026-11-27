@@ -1,7 +1,7 @@
 {
   "plans": [
     {
-      "id": "plan-1",
+      "id": "2026-11-27-cycling",
       "city": "Toronto",
       "activityId": "cycling",
       "activityTitle": "Cycling",
@@ -12,7 +12,7 @@
       "savedAt": "2026-11-26T15:30:00.000Z"
     },
     {
-      "id": "plan-2",
+      "id": "2026-11-26-hiking",
       "city": "Toronto",
       "activityId": "hiking",
       "activityTitle": "Hiking",
@@ -23,7 +23,7 @@
       "savedAt": "2026-11-26T15:10:00.000Z"
     },
     {
-      "id": "plan-3",
+      "id": "2026-11-28-picnic",
       "city": "Hamilton",
       "activityId": "picnic",
       "activityTitle": "Picnic",
