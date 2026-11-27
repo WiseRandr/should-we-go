@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="css/main.css" />
     <script src="js/theme.js"></script>
     <script type="module" src="js/home.js"></script>
+    <script type="module" src="js/forecast.js"></script>
   </head>
 
   <body>
@@ -22,6 +23,8 @@
             <ul class="nav" role="list">
               <li><a class="nav__link" href="index.html" aria-current="page">Plan</a></li>
               <li><a class="nav__link" href="saved.html">Saved plans</a></li>
+              <li><a class="nav__link" href="about.html">About</a></li>
+              <li><a class="nav__link" href="contact.html">Contact</a></li>
             </ul>
           </nav>
           <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme">🌙</button>
@@ -37,7 +40,8 @@
             Pick a city, an activity and a day. We'll check the forecast and tell you if it's worth it.
           </p>
 
-          <form class="search-form card" id="search-form" action="forecast.html" method="get" novalidate>
+          <!-- Submits to this same page: index.html?city=...&activity=...&day=... -->
+          <form class="search-form card" id="search-form" action="index.html#results" method="get" novalidate>
             <div class="field search-form__city">
               <label class="field__label" for="city-input">City</label>
               <input class="input" id="city-input" name="city" type="text" placeholder="e.g. Toronto" required />
@@ -57,6 +61,58 @@
 
             <p class="alert alert--error search-form__error" id="search-error" role="alert" hidden></p>
           </form>
+        </div>
+      </section>
+
+      <section class="container results" id="results" aria-live="polite">
+        <p class="state" id="results-loading" hidden>Checking the forecast…</p>
+
+        <div class="state" id="results-empty" hidden>
+          <p class="state__icon" aria-hidden="true">🌤</p>
+          <p><strong>No forecast yet</strong></p>
+          <p>Choose a city, an activity and a day above, then press <strong>Check weather</strong>.</p>
+        </div>
+
+        <div id="results-content" hidden>
+          <header class="results__header">
+            <div>
+              <p class="eyebrow">Forecast for</p>
+              <h2 class="results__title" id="results-location"></h2>
+            </div>
+            <p class="muted">Activity: <strong id="results-activity"></strong></p>
+          </header>
+
+          <ul class="forecast-list" id="forecast-list" role="list"></ul>
+
+          <div class="verdict-grid">
+            <article class="card verdict" id="verdict">
+              <div class="score-ring" id="score-ring" role="img">
+                <span class="score-ring__value" id="score-value"></span>
+                <span class="score-ring__max">/ 100</span>
+              </div>
+              <div class="verdict__text">
+                <span class="badge" id="verdict-badge"></span>
+                <h3 class="verdict__title" id="verdict-title"></h3>
+                <p class="muted" id="verdict-summary"></p>
+                <button class="btn btn--primary" type="button" id="save-plan-btn">Save this plan</button>
+              </div>
+            </article>
+
+            <article class="card verdict-grid__wide">
+              <h3 class="card__title">Weather details</h3>
+              <dl class="weather-stats" id="weather-stats"></dl>
+            </article>
+
+            <article class="card">
+              <h3 class="card__title">Warnings</h3>
+              <ul class="note-list note-list--warning" id="warnings-list" role="list"></ul>
+            </article>
+
+            <article class="card">
+              <h3 class="card__title">Packing advice</h3>
+              <ul class="note-list note-list--advice" id="advice-list" role="list"></ul>
+            </article>
+          </div>
         </div>
       </section>
     </main>

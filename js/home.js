@@ -3,6 +3,7 @@
 
 import STORAGE from "./storage.js";
 
+const cityInput = document.getElementById("city-input");
 const activitySelect = document.getElementById("activity-select");
 const daySelect = document.getElementById("day-select");
 const searchError = document.getElementById("search-error");
@@ -36,4 +37,29 @@ for (let i = 0; i < totalDays; i++) {
   }
 
   daySelect.appendChild(option);
+}
+
+// Keep the last search in the form (the page reloads with ?city=...&activity=...&day=...)
+const params = new URLSearchParams(window.location.search);
+
+if (params.get("city")) {
+  cityInput.value = params.get("city");
+}
+
+if (params.get("activity")) {
+  activitySelect.value = params.get("activity");
+}
+
+if (params.get("date")) {
+  // A reopened plan sends a date: turn it into "in X days" from today
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const planDate = new Date(`${params.get("date")}T00:00:00`);
+  const daysAway = Math.round((planDate - today) / (1000 * 60 * 60 * 24));
+
+  if (daysAway >= 0 && daysAway < totalDays) {
+    daySelect.value = daysAway;
+  }
+} else if (params.get("day")) {
+  daySelect.value = params.get("day");
 }

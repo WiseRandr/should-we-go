@@ -8,20 +8,28 @@
   box-shadow: var(--shadow);
 }
 
+/* stretch so the tabs fill the full header height */
 .site-header__inner,
 .header-actions,
-.nav {
+.header-actions nav,
+.nav,
+.nav li {
   display: flex;
-  align-items: center;
-  gap: var(--space-3);
+  align-items: stretch;
 }
 
 .site-header__inner {
   justify-content: space-between;
+  gap: var(--space-4);
   min-height: 64px;
 }
 
+.header-actions {
+  gap: var(--space-3);
+}
+
 .brand {
+  align-self: center;
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -42,21 +50,41 @@
   color: #12291f;
 }
 
-.nav__link,
+/* Tabs */
+.nav__link {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-3);
+  border-bottom: 3px solid transparent;
+  color: inherit;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  opacity: 0.75;
+  transition: opacity var(--transition), border-color var(--transition);
+}
+
+.nav__link:hover {
+  opacity: 1;
+  border-bottom-color: rgb(255 255 255 / 0.35);
+}
+
+.nav__link[aria-current="page"] {
+  opacity: 1;
+  border-bottom-color: var(--sun);
+}
+
 .theme-toggle {
+  align-self: center;
   padding: var(--space-2) var(--space-3);
   border: 0;
   border-radius: var(--radius-pill);
   background: transparent;
   color: inherit;
-  font-weight: 500;
-  text-decoration: none;
   cursor: pointer;
 }
 
-.nav__link:hover,
-.theme-toggle:hover,
-.nav__link[aria-current="page"] {
+.theme-toggle:hover {
   background: rgb(255 255 255 / 0.14);
 }
 
@@ -107,15 +135,13 @@ main {
   padding-block: var(--space-6) var(--space-7);
 }
 
-.results > .alert,
 .saved > .alert {
   margin-bottom: var(--space-4);
 }
 
-.back-link {
-  display: inline-block;
-  margin-bottom: var(--space-4);
-  text-decoration: none;
+/* Keeps the results below the sticky header when the page jumps to #results */
+.results {
+  scroll-margin-top: 64px;
 }
 
 .results__header,
@@ -399,6 +425,25 @@ main {
 
 /* Phone */
 @media (max-width: 560px) {
+  /* Tabs go on their own row under the logo and scroll sideways if needed */
+  .site-header__inner {
+    flex-wrap: wrap;
+    padding-top: var(--space-3);
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .header-actions nav {
+    overflow-x: auto;
+  }
+
+  .nav__link {
+    min-height: 48px;
+  }
+
   .search-form {
     grid-template-columns: 1fr;
   }
