@@ -1,11 +1,62 @@
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Should we go?</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Should We Go?</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script type="module" src="js/ui.js"></script>
   </head>
+
   <body>
-    <div>
-      <h1>Should we go? (group 5)</h1>
-    </div>
+    <header>
+      <h1>Should We Go?</h1>
+      <p>Plan your next outdoor adventure!</p>
+    </header>
+
+    <main>
+      <section class="container">
+        <h2>Plan Your Activity</h2>
+
+        <form id="weatherForm">
+          <label for="city">Enter a City:</label>
+          <input type="text" id="city" placeholder="Example: Toronto" />
+
+          <label for="activity">Choose an Activity:</label>
+          <select id="activity">
+            <option value="hiking">Hiking</option>
+            <option value="cycling">Cycling</option>
+            <option value="picnic">Picnic</option>
+            <option value="photography">Photography</option>
+          </select>
+
+          <label for="day">Enter a Day:</label>
+          <select id="day">
+            <option value="today">Today</option>
+            <option value="tomorrow">Tomorrow</option>
+            <option value="2days">In 2 days</option>
+            <option value="3days">In 3 days</option>
+          </select>
+
+          <button type="submit">Check Weather</button>
+        </form>
+      </section>
+
+      <section class="weatherResults">
+        <h2>Weather Results</h2>
+        <div id="results">
+          <p>Enter a city to check the weather</p>
+        </div>
+      </section>
+
+      <section class="plans">
+        <h2>Saved Plans</h2>
+        <div id="plans">
+          <p>You haven't saved any plans yet</p>
+        </div>
+      </section>
+
+    </main>
+
   </body>
 </html>
