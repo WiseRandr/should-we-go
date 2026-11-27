@@ -23,11 +23,8 @@ const adviceList = document.getElementById("advice-list");
 const searchError = document.getElementById("search-error");
 const savePlanButton = document.getElementById("save-plan-btn");
 
-const params = new URLSearchParams(window.location.search);
-const city = params.get("city");
-const activityId = params.get("activity");
-const dayIndex = Number(params.get("day")) || 0;
-const date = params.get("date"); // sent by Reopen on the saved plans page
+// The plan for the forecast currently on screen (used by the Save button)
+let currentPlan = null;
 
 function getVerdict(score) {
   if (score >= 70) {
@@ -50,7 +47,29 @@ function showError(message) {
   searchError.hidden = false;
 }
 
-async function showForecast() {
+// Clears everything from the previous search
+function resetResults() {
+  searchError.textContent = "";
+  searchError.hidden = true;
+  resultsEmpty.hidden = true;
+  resultsContent.hidden = true;
+
+  forecastList.innerHTML = "";
+  weatherStats.innerHTML = "";
+  warningsList.innerHTML = "";
+  adviceList.innerHTML = "";
+  warningsList.className = "note-list note-list--warning";
+
+  savePlanButton.textContent = "Save this plan";
+  savePlanButton.disabled = false;
+  currentPlan = null;
+}
+
+// Called by the form (ui.js) and on page load for a reopened plan.
+// date is only sent by Reopen; otherwise dayIndex (0 = today) picks the day.
+async function showForecast({ city, activityId, dayIndex = 0, date = null }) {
+  resetResults();
+
   if (!city) {
     resultsEmpty.hidden = false;
     return;
@@ -90,7 +109,7 @@ async function showForecast() {
   const days = forecast.map((day) => ({ ...day, score: activity.calculateScore(day) }));
 
   // Pick the day: by date for a reopened plan, otherwise by the day number from the form
-  let selectedIndex = dayIndex;
+  let selectedIndex = Number(dayIndex) || 0;
 
   if (date) {
     selectedIndex = days.findIndex((day) => day.date === date);
@@ -133,9 +152,9 @@ async function showForecast() {
     weekday.className = "forecast-card__day";
     weekday.textContent = formatDate(day.date, { weekday: "short" });
 
-    const date = document.createElement("span");
-    date.className = "forecast-card__date";
-    date.textContent = formatDate(day.date, { month: "short", day: "numeric" });
+    const dayDate = document.createElement("span");
+    dayDate.className = "forecast-card__date";
+    dayDate.textContent = formatDate(day.date, { month: "short", day: "numeric" });
 
     const temp = document.createElement("span");
     temp.className = "forecast-card__temp";
@@ -146,7 +165,7 @@ async function showForecast() {
     badge.textContent = day.score;
 
     button.appendChild(weekday);
-    button.appendChild(date);
+    button.appendChild(dayDate);
     button.appendChild(temp);
     button.appendChild(badge);
     li.appendChild(button);
@@ -216,45 +235,62 @@ async function showForecast() {
     adviceList.appendChild(li);
   });
 
-  // Save plan (id = date + activity, so there is only one plan per activity per day)
-  const planId = `${selectedDay.date}-${activity.id}`;
+  // Plan ready to save (id = date + activity, so there is only one plan per activity per day)
+  currentPlan = {
+    id: `${selectedDay.date}-${activity.id}`,
+    city: place.name,
+    activityId: activity.id,
+    activityTitle: activity.title,
+    dayIndex: selectedIndex,
+    date: selectedDay.date,
+    score: selectedDay.score,
+    weather: {
+      maxTemp: Math.round(selectedDay.maxTemp),
+      minTemp: Math.round(selectedDay.minTemp),
+      rainChance: selectedDay.rainChance,
+      windSpeed: Math.round(selectedDay.windSpeed),
+    },
+  };
+
   const { plans } = await STORAGE.getPlans();
 
-  if (plans.some((plan) => plan.id === planId)) {
+  if (plans.some((plan) => plan.id === currentPlan.id)) {
     savePlanButton.textContent = "Update saved plan";
   }
-
-  savePlanButton.addEventListener("click", async () => {
-    const plan = {
-      id: planId,
-      city: place.name,
-      activityId: activity.id,
-      activityTitle: activity.title,
-      dayIndex: selectedIndex,
-      date: selectedDay.date,
-      score: selectedDay.score,
-      weather: {
-        maxTemp: Math.round(selectedDay.maxTemp),
-        minTemp: Math.round(selectedDay.minTemp),
-        rainChance: selectedDay.rainChance,
-        windSpeed: Math.round(selectedDay.windSpeed),
-      },
-      savedAt: new Date().toISOString(),
-    };
-
-    const { error } = await STORAGE.savePlan(plan);
-
-    if (error) {
-      showError(error);
-      return;
-    }
-
-    // Stop the same plan from being saved twice
-    savePlanButton.textContent = "Saved ✓";
-    savePlanButton.disabled = true;
-  });
 
   resultsContent.hidden = false;
 }
 
-showForecast();
+// Added once: saves whatever forecast is on screen when clicked
+savePlanButton.addEventListener("click", async () => {
+  if (!currentPlan) {
+    return;
+  }
+
+  const { error } = await STORAGE.savePlan({ ...currentPlan, savedAt: new Date().toISOString() });
+
+  if (error) {
+    showError(error);
+    return;
+  }
+
+  // Stop the same plan from being saved twice
+  savePlanButton.textContent = "Saved ✓";
+  savePlanButton.disabled = true;
+});
+
+// On page load: show a forecast if the URL has one (Reopen from the saved plans page)
+const params = new URLSearchParams(window.location.search);
+
+if (params.get("city")) {
+  showForecast({
+    city: params.get("city"),
+    activityId: params.get("activity"),
+    dayIndex: params.get("day"),
+    date: params.get("date"),
+  });
+} else {
+  resultsEmpty.hidden = false;
+}
+
+export { showForecast };
