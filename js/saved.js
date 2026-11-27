@@ -175,7 +175,7 @@ planList.addEventListener("click", async (event) => {
 
   if (button.dataset.action === "reopen") {
     const params = new URLSearchParams({ city: plan.city, activity: plan.activityId, date: plan.date });
-    window.location.href = `forecast.html?${params.toString()}`;
+    window.location.href = `index.html?${params.toString()}#results`;
   }
 
   if (button.dataset.action === "delete") {
