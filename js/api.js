@@ -6,8 +6,7 @@ async function searchCity(city) {
   try {
     // attempts to run the city search
 
-    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`; // API address with the city name
-
+const url = `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`;
     console.log(url); // prints the API address
 
     const response = await fetch(url); // sends a request and waits for the response
@@ -38,7 +37,7 @@ async function getForecast(latitude, longitude) {
   try {
     // attempts to retrieve weather data
 
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&timezone=auto`; // requests daily weather forecasts
+const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,relative_humidity_2m_mean,uv_index_max&timezone=auto`;
 
     const response = await fetch(url); // sends a request to the weather API
 
@@ -59,6 +58,8 @@ async function getForecast(latitude, longitude) {
       minTemp: data.daily.temperature_2m_min[i], // lowest temperature
       rainChance: data.daily.precipitation_probability_max[i], // chance of precipitation
       windSpeed: data.daily.wind_speed_10m_max[i], // highest wind speed
+      humidity: data.daily.relative_humidity_2m_mean[i], // average humidity
+      uvIndex: data.daily.uv_index_max[i] // highest UV index
     }));
 
     console.log("----- normalized data -----");
@@ -72,7 +73,7 @@ async function getForecast(latitude, longitude) {
 }
 
 console.log("----- city search -----");
-/*
+
 const cityData = await searchCity("Toronto"); // waits for and stores the returned city data
 
 console.log("City:",cityData.name); // prints city name
@@ -80,5 +81,5 @@ console.log("Latitude:",cityData.latitude); // prints latitude
 console.log("Longitude:",cityData.longitude); // prints longitude
 
 await getForecast(cityData.latitude,cityData.longitude); // passes the coordinates to the forecast function
-*/
+
 export { searchCity, getForecast }; // allows other modules to import both functions
