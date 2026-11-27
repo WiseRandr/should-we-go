@@ -46,10 +46,12 @@ class Activity {
     return 1;
   }
 
-  // Only the factors the forecast has a value for (uvIndex / humidity can be missing)
+  // Only the factors the forecast has a value for (the API can leave some out)
   getAvailableFactors(day) {
     const values = this.getWeatherValues(day);
-    return Object.keys(this.preferredWeather).filter((name) => values[name] !== undefined);
+    return Object.keys(this.preferredWeather).filter(
+      (name) => values[name] !== undefined && values[name] !== null
+    );
   }
 
   calculateScore(day) {
@@ -123,131 +125,4 @@ class Activity {
   }
 }
 
-class Hiking extends Activity {
-  getAdvice(day) {
-    const advice = super.getAdvice(day);
-    advice.push("Hiking boots", "Snacks", "Trail map");
-    return advice;
-  }
-}
-
-class Cycling extends Activity {
-  // Strong wind makes cycling unsafe, whatever the other conditions are
-  calculateScore(day) {
-    const score = super.calculateScore(day);
-    if (day.windSpeed >= this.preferredWeather.windSpeed.acceptableMax) {
-      return Math.min(score, 30);
-    }
-    return score;
-  }
-
-  getAdvice(day) {
-    const advice = super.getAdvice(day);
-    advice.push("Helmet", "Bike lights", "Repair kit");
-    return advice;
-  }
-}
-
-class Picnic extends Activity {
-  // Likely rain ruins a picnic, whatever the other conditions are
-  calculateScore(day) {
-    const score = super.calculateScore(day);
-    if (day.rainChance >= this.preferredWeather.precipitationProbability.acceptableMax) {
-      return Math.min(score, 30);
-    }
-    return score;
-  }
-
-  getAdvice(day) {
-    const advice = super.getAdvice(day);
-    advice.push("Blanket", "Food and drinks", "Garbage bag");
-    return advice;
-  }
-}
-
-class Photography extends Activity {
-  getAdvice(day) {
-    const advice = super.getAdvice(day);
-    advice.push("Charged batteries", "Memory card");
-    if (day.rainChance >= 30) {
-      advice.push("Rain cover for the camera");
-    }
-    return advice;
-  }
-}
-
-class Running extends Activity {
-  getAdvice(day) {
-    const advice = super.getAdvice(day);
-    advice.push("Running shoes", "Light, breathable clothes");
-    return advice;
-  }
-}
-
-class Camping extends Activity {
-  // Camping lasts all night, so the low temperature matters too
-  calculateScore(day) {
-    const score = super.calculateScore(day);
-    if (day.minTemp <= this.preferredWeather.temperature.acceptableMin) {
-      return Math.min(score, 30);
-    }
-    return score;
-  }
-
-  getAdvice(day) {
-    const advice = super.getAdvice(day);
-    advice.push("Tent", "Sleeping bag", "Flashlight");
-    return advice;
-  }
-}
-
-class BeachDay extends Activity {
-  // Too cold for the beach means a low score, whatever the other conditions are
-  calculateScore(day) {
-    const score = super.calculateScore(day);
-    if (day.maxTemp <= this.preferredWeather.temperature.acceptableMin) {
-      return Math.min(score, 20);
-    }
-    return score;
-  }
-
-  getAdvice(day) {
-    const advice = super.getAdvice(day);
-    advice.push("Towel", "Swimsuit", "Beach umbrella");
-    return advice;
-  }
-}
-
-class Walking extends Activity {
-  getAdvice(day) {
-    const advice = super.getAdvice(day);
-    advice.push("Comfortable shoes");
-    return advice;
-  }
-}
-
-// Builds the right class for an activity from data/activities.json
-function createActivity(data) {
-  switch (data.id) {
-    case "hiking":
-      return new Hiking(data);
-    case "cycling":
-      return new Cycling(data);
-    case "picnic":
-      return new Picnic(data);
-    case "outdoor-photography":
-      return new Photography(data);
-    case "running":
-      return new Running(data);
-    case "camping":
-      return new Camping(data);
-    case "beach-day":
-      return new BeachDay(data);
-    case "walking":
-      return new Walking(data);
-    default:
-      return new Activity(data);
-  }
-}
-
-export { Activity, createActivity };
+export default Activity;

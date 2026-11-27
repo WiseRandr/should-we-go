@@ -2,9 +2,11 @@
 // Student number: n10035720
 
 import STORAGE from "./storage.js";
-import { createActivity } from "./activity.js";
+import { searchCity, getForecast } from "./api.js";
+import createActivity from "./classes/create-activity.js";
 
 const resultsEmpty = document.getElementById("results-empty");
+const resultsLoading = document.getElementById("results-loading");
 const resultsContent = document.getElementById("results-content");
 const resultsLocation = document.getElementById("results-location");
 const resultsActivity = document.getElementById("results-activity");
@@ -19,17 +21,6 @@ const weatherStats = document.getElementById("weather-stats");
 const warningsList = document.getElementById("warnings-list");
 const adviceList = document.getElementById("advice-list");
 const searchError = document.getElementById("search-error");
-
-// Sample data until the API is connected
-const forecast = [
-  { date: "2026-11-26", maxTemp: 8, minTemp: 1, rainChance: 45, windSpeed: 24, uvIndex: 2, humidity: 72 },
-  { date: "2026-11-27", maxTemp: 12, minTemp: 4, rainChance: 10, windSpeed: 12, uvIndex: 3, humidity: 55 },
-  { date: "2026-11-28", maxTemp: 5, minTemp: -2, rainChance: 70, windSpeed: 31, uvIndex: 1, humidity: 88 },
-  { date: "2026-11-29", maxTemp: 9, minTemp: 2, rainChance: 30, windSpeed: 18, uvIndex: 2, humidity: 66 },
-  { date: "2026-11-30", maxTemp: 11, minTemp: 3, rainChance: 15, windSpeed: 16, uvIndex: 3, humidity: 60 },
-  { date: "2026-12-01", maxTemp: 7, minTemp: 0, rainChance: 40, windSpeed: 22, uvIndex: 2, humidity: 70 },
-  { date: "2026-12-02", maxTemp: 3, minTemp: -4, rainChance: 80, windSpeed: 35, uvIndex: 1, humidity: 90 },
-];
 
 const params = new URLSearchParams(window.location.search);
 const city = params.get("city");
@@ -51,19 +42,44 @@ function formatDate(date, options) {
   return new Date(`${date}T00:00:00`).toLocaleDateString("en-CA", options);
 }
 
+function showError(message) {
+  resultsLoading.hidden = true;
+  searchError.textContent = message;
+  searchError.hidden = false;
+}
+
 async function showForecast() {
   if (!city) {
     resultsEmpty.hidden = false;
     return;
   }
 
+  resultsLoading.hidden = false;
+
   const { activities, error } = await STORAGE.getActivities();
 
   if (error) {
-    searchError.textContent = error;
-    searchError.hidden = false;
+    showError(error);
     return;
   }
+
+  // City name -> coordinates -> 7-day forecast
+  let place;
+  let forecast;
+
+  try {
+    place = await searchCity(city);
+    forecast = await getForecast(place.latitude, place.longitude);
+  } catch (error) {
+    if (error.message === "City not found") {
+      showError(`We couldn't find "${city}". Check the spelling and try again.`);
+    } else {
+      showError("Could not load the forecast. Please try again later.");
+    }
+    return;
+  }
+
+  resultsLoading.hidden = true;
 
   const activityData = activities.find((item) => item.id === activityId) || activities[0];
   const activity = createActivity(activityData);
@@ -77,7 +93,8 @@ async function showForecast() {
   const advice = activity.getAdvice(selectedDay);
 
   // Header
-  resultsLocation.textContent = city;
+  // e.g. "Toronto, Ontario, Canada" (filter removes parts the API didn't send)
+  resultsLocation.textContent = [place.name, place.admin1, place.country].filter((part) => part).join(", ");
   resultsActivity.textContent = activity.title;
 
   // Forecast day cards
@@ -137,9 +154,15 @@ async function showForecast() {
     { label: "Temperature", value: `${Math.round(selectedDay.maxTemp)}° / ${Math.round(selectedDay.minTemp)}°C` },
     { label: "Rain chance", value: `${selectedDay.rainChance}%` },
     { label: "Wind", value: `${Math.round(selectedDay.windSpeed)} km/h` },
-    { label: "UV index", value: selectedDay.uvIndex },
-    { label: "Humidity", value: `${selectedDay.humidity}%` },
   ];
+
+  // Only shown when the API sends them
+  if (selectedDay.uvIndex !== undefined) {
+    stats.push({ label: "UV index", value: Math.round(selectedDay.uvIndex) });
+  }
+  if (selectedDay.humidity !== undefined) {
+    stats.push({ label: "Humidity", value: `${Math.round(selectedDay.humidity)}%` });
+  }
 
   stats.forEach((stat) => {
     const div = document.createElement("div");
