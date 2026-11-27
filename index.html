@@ -2,61 +2,123 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Should We Go?</title>
-    <link rel="stylesheet" href="css/style.css" />
-    <script type="module" src="js/ui.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Should We Go? · Outdoor Activity Planner</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="js/theme.js"></script>
+    <script type="module" src="js/home.js"></script>
+    <script type="module" src="js/forecast.js"></script>
   </head>
 
   <body>
-    <header>
-      <h1>Should We Go?</h1>
-      <p>Plan your next outdoor adventure!</p>
+    <header class="site-header">
+      <div class="container site-header__inner">
+        <a class="brand" href="index.html">
+          <span class="brand__mark" aria-hidden="true">⛰</span>
+          <span class="brand__name">Should We Go?</span>
+        </a>
+        <div class="header-actions">
+          <nav aria-label="Main">
+            <ul class="nav" role="list">
+              <li><a class="nav__link" href="index.html" aria-current="page">Plan</a></li>
+              <li><a class="nav__link" href="saved.html">Saved plans</a></li>
+              <li><a class="nav__link" href="about.html">About</a></li>
+              <li><a class="nav__link" href="contact.html">Contact</a></li>
+            </ul>
+          </nav>
+          <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme">🌙</button>
+        </div>
+      </div>
     </header>
 
     <main>
-      <section class="container">
-        <h2>Plan Your Activity</h2>
+      <section class="hero">
+        <div class="container">
+          <h1>Should we go?</h1>
+          <p class="hero__lead">
+            Pick a city, an activity and a day. We'll check the forecast and tell you if it's worth it.
+          </p>
 
-        <form id="weatherForm">
-          <label for="city">Enter a City:</label>
-          <input type="text" id="city" placeholder="Example: Toronto" />
+          <!-- Submits to this same page: index.html?city=...&activity=...&day=... -->
+          <form class="search-form card" id="search-form" action="index.html#results" method="get" novalidate>
+            <div class="field search-form__city">
+              <label class="field__label" for="city-input">City</label>
+              <input class="input" id="city-input" name="city" type="text" placeholder="e.g. Toronto" required />
+            </div>
 
-          <label for="activity">Choose an Activity:</label>
-          <select id="activity">
-            <option value="hiking">Hiking</option>
-            <option value="cycling">Cycling</option>
-            <option value="picnic">Picnic</option>
-            <option value="photography">Photography</option>
-          </select>
+            <div class="field">
+              <label class="field__label" for="activity-select">Activity</label>
+              <select class="select" id="activity-select" name="activity"></select>
+            </div>
 
-          <label for="day">Enter a Day:</label>
-          <select id="day">
-            <option value="today">Today</option>
-            <option value="tomorrow">Tomorrow</option>
-            <option value="2days">In 2 days</option>
-            <option value="3days">In 3 days</option>
-          </select>
+            <div class="field">
+              <label class="field__label" for="day-select">Day</label>
+              <select class="select" id="day-select" name="day"></select>
+            </div>
 
-          <button type="submit">Check Weather</button>
-        </form>
-      </section>
+            <button class="btn btn--primary search-form__submit" type="submit">Check weather</button>
 
-      <section class="weatherResults">
-        <h2>Weather Results</h2>
-        <div id="results">
-          <p>Enter a city to check the weather</p>
+            <p class="alert alert--error search-form__error" id="search-error" role="alert" hidden></p>
+          </form>
         </div>
       </section>
 
-      <section class="plans">
-        <h2>Saved Plans</h2>
-        <div id="plans">
-          <p>You haven't saved any plans yet</p>
+      <section class="container results" id="results" aria-live="polite">
+        <p class="state" id="results-loading" hidden>Checking the forecast…</p>
+
+        <div class="state" id="results-empty" hidden>
+          <p class="state__icon" aria-hidden="true">🌤</p>
+          <p><strong>No forecast yet</strong></p>
+          <p>Choose a city, an activity and a day above, then press <strong>Check weather</strong>.</p>
+        </div>
+
+        <div id="results-content" hidden>
+          <header class="results__header">
+            <div>
+              <p class="eyebrow">Forecast for</p>
+              <h2 class="results__title" id="results-location"></h2>
+            </div>
+            <p class="muted">Activity: <strong id="results-activity"></strong></p>
+          </header>
+
+          <ul class="forecast-list" id="forecast-list" role="list"></ul>
+
+          <div class="verdict-grid">
+            <article class="card verdict" id="verdict">
+              <div class="score-ring" id="score-ring" role="img">
+                <span class="score-ring__value" id="score-value"></span>
+                <span class="score-ring__max">/ 100</span>
+              </div>
+              <div class="verdict__text">
+                <span class="badge" id="verdict-badge"></span>
+                <h3 class="verdict__title" id="verdict-title"></h3>
+                <p class="muted" id="verdict-summary"></p>
+                <button class="btn btn--primary" type="button" id="save-plan-btn">Save this plan</button>
+              </div>
+            </article>
+
+            <article class="card verdict-grid__wide">
+              <h3 class="card__title">Weather details</h3>
+              <dl class="weather-stats" id="weather-stats"></dl>
+            </article>
+
+            <article class="card">
+              <h3 class="card__title">Warnings</h3>
+              <ul class="note-list note-list--warning" id="warnings-list" role="list"></ul>
+            </article>
+
+            <article class="card">
+              <h3 class="card__title">Packing advice</h3>
+              <ul class="note-list note-list--advice" id="advice-list" role="list"></ul>
+            </article>
+          </div>
         </div>
       </section>
-
     </main>
 
+    <footer class="site-footer">
+      <p>Should We Go? · CPAN 113 Group 5 · Weather data by <a href="https://open-meteo.com/">Open-Meteo</a></p>
+    </footer>
   </body>
 </html>

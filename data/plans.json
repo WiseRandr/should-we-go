@@ -1,0 +1,37 @@
+{
+  "plans": [
+    {
+      "id": "2026-11-27-cycling",
+      "city": "Toronto",
+      "activityId": "cycling",
+      "activityTitle": "Cycling",
+      "dayIndex": 1,
+      "date": "2026-11-27",
+      "score": 81,
+      "weather": { "maxTemp": 12, "minTemp": 4, "rainChance": 10, "windSpeed": 12 },
+      "savedAt": "2026-11-26T15:30:00.000Z"
+    },
+    {
+      "id": "2026-11-26-hiking",
+      "city": "Toronto",
+      "activityId": "hiking",
+      "activityTitle": "Hiking",
+      "dayIndex": 0,
+      "date": "2026-11-26",
+      "score": 58,
+      "weather": { "maxTemp": 8, "minTemp": 1, "rainChance": 45, "windSpeed": 24 },
+      "savedAt": "2026-11-26T15:10:00.000Z"
+    },
+    {
+      "id": "2026-11-28-picnic",
+      "city": "Hamilton",
+      "activityId": "picnic",
+      "activityTitle": "Picnic",
+      "dayIndex": 2,
+      "date": "2026-11-28",
+      "score": 32,
+      "weather": { "maxTemp": 5, "minTemp": -2, "rainChance": 70, "windSpeed": 31 },
+      "savedAt": "2026-11-26T14:45:00.000Z"
+    }
+  ]
+}
