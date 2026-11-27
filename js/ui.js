@@ -1,8 +1,8 @@
   // Get the HTML elements
-  const weatherForm = document.getElementById("weatherForm");
-  const cityInput = document.getElementById("city");
-  const activityInput = document.getElementById("activity");
-  const dayInput = document.getElementById("day");
+  const weatherForm = document.getElementById("search-form");
+  const cityInput = document.getElementById("city-input");
+  const activityInput = document.getElementById("activity-select");
+  const dayInput = document.getElementById("day-select");
   const results = document.getElementById("results");
 
   // Listen for the form submission
