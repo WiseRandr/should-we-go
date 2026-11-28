@@ -37,6 +37,7 @@ Every page has a light/dark theme toggle in the header. The choice is remembered
 ```
 should-we-go/
 ├── index.html, saved.html, about.html, contact.html
+├── favicon.svg, favicon.png   browser tab icon
 ├── css/
 │   ├── theme.css        colours, sizes and shared styles (light + dark)
 │   └── main.css         page layouts
